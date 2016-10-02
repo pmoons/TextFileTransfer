@@ -19,6 +19,7 @@ import java.util.Map;
 public class FTclient {
 	private static String[] fileList;
 	private static String fileDirectory = getDirectoryName();
+	private static final int PORT = 3000;
 
 	public static void main(String[] args) {
 		final Map<String, Runnable> ACTIONS = new HashMap<>();
@@ -52,7 +53,10 @@ public class FTclient {
 			System.out.println("Uploading: " + fileName);
 			
 			try {
-				Socket socket = new Socket("localhost", 3000);
+				FTserver server = new FTserver();
+				server.start();
+	
+				Socket socket = new Socket("localhost", PORT);
 				BufferedReader socketReader = new BufferedReader(
 						new InputStreamReader(socket.getInputStream()));
 				
@@ -60,7 +64,7 @@ public class FTclient {
 				socketWriter.println(fileContents); // Send file to server
 
 				String response = socketReader.readLine(); // Receive response
-				System.out.println("Server response: " + response);
+				System.out.println("(From Server) " + response);
 				
 				socket.close();
 			} catch (IOException e) {
@@ -77,7 +81,7 @@ public class FTclient {
 	}
 	
 	private static String getFileContents(String fileName) {
-		String fileContents = null;
+		String fileContents = "";
 
 		try {
 			FileReader fileReader = new FileReader(fileDirectory + fileName);
@@ -107,7 +111,7 @@ public class FTclient {
 	private static void help() {
 		System.out.print(
 				"\nFile Transfer Client Commands:\n"
-				+ "Usage: java assignment_1/FTclient [command] [file1 file2 ...]\n"
+				+ "Usage: java assignment_1/FTclient [command] [file1.txt file2.txt ...]\n"
 				+ "upload: --upload | -u\n"
 				+ "download: --download | -d\n"
 				+ "help: --help | -h\n"
