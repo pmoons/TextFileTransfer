@@ -105,6 +105,12 @@ public class FTclient {
 	}
 	
 	private static void help() {
-		System.out.println("I am helping!");
+		System.out.print(
+				"\nFile Transfer Client Commands:\n"
+				+ "Usage: java assignment_1/FTclient [command] [file1 file2 ...]\n"
+				+ "upload: --upload | -u\n"
+				+ "download: --download | -d\n"
+				+ "help: --help | -h\n"
+			);
 	}
 }
