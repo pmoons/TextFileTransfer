@@ -11,15 +11,14 @@ import java.net.ServerSocket;
 public class FTserver {
 	private static final int PORT = 3000;
 
-	public static void start() {
+	public void start(String action) {
 		try {
 			ServerSocket serverSocket = new ServerSocket(PORT);
-			FTthread thread = new FTthread(serverSocket);
+			FTthread thread = new FTthread(serverSocket, action);
 			thread.start();
 		} catch (IOException e) {
 			System.out.println("Error starting server on port: " + PORT);
 			e.printStackTrace();
 		}
-		
 	}
 }

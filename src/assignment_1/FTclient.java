@@ -54,7 +54,7 @@ public class FTclient {
 			
 			try {
 				FTserver server = new FTserver();
-				server.start();
+				server.start("upload");
 	
 				Socket socket = new Socket("localhost", PORT);
 				BufferedReader socketReader = new BufferedReader(
@@ -72,6 +72,36 @@ public class FTclient {
 			}
 		}
 	} 
+	
+	private static void download() {
+		if (fileList.length == 0) {
+			System.out.println("No file names provided. Aborting upload.");
+			System.exit(1);
+		}
+		
+		FTserver server = new FTserver();
+		
+		for (String fileName : fileList) {
+			System.out.println("Downloading: " + fileName);
+			server.start("download");
+
+			try {
+				Socket socket = new Socket("localhost", PORT);
+				BufferedReader socketReader = new BufferedReader(
+						new InputStreamReader(socket.getInputStream()));
+				
+				PrintWriter socketWriter = new PrintWriter(socket.getOutputStream(), true);
+				socketWriter.println(fileName); // Send file to server
+
+				String response = socketReader.readLine(); // Receive response
+				System.out.println("(From Server) " + response);
+				
+				socket.close();
+			} catch (IOException e) {
+				System.out.println(e);
+			}
+		}
+	}
 	
 	private static String getDirectoryName() {
 		FTclient client = new FTclient();
@@ -92,7 +122,6 @@ public class FTclient {
 			}
 			
 			fileReader.close();
-			System.out.println(fileContents);
 		} catch (FileNotFoundException e) {
 			System.out.println("Could not find file: " + fileName);
 			System.exit(1);
@@ -102,10 +131,6 @@ public class FTclient {
 		}
 		
 		return fileContents.toString();
-	}
-	
-	private static void download() {
-		System.out.println("I am downloading!");
 	}
 	
 	private static void help() {
