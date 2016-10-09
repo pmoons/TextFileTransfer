@@ -68,7 +68,7 @@ public class FTclient {
 				
 				socket.close();
 			} catch (IOException e) {
-				System.out.println(e);
+				System.out.println("There was an error connecting to the server. Did you forget to start it?");
 			}
 		}
 	} 
@@ -97,7 +97,7 @@ public class FTclient {
 				
 				socket.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				System.out.println("There was an error connecting to the server. Did you forget to start it?");
 			}
 		} 
 	}
