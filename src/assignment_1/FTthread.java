@@ -11,60 +11,40 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.ServerSocket;
 import java.net.Socket;
 
 public class FTthread extends Thread {
-	private ServerSocket serverSocket;
-	private String action;	
+	private Socket socket;
 	private static String fileDirectory = getDirectoryName();
 
 
-	public FTthread(ServerSocket socket, String action) {
-		this.serverSocket = socket;
-		this.action = action;
+	public FTthread(Socket socket) {
+		this.socket = socket;
 	}
 	
 	public void run() {
-		try {
-			Socket socket = this.serverSocket.accept();
-						
+		try {						
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
 					socket.getInputStream()));
 			PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
+
+			String clientRequest = reader.readLine();
+			String method = clientRequest.substring(0, 5).toUpperCase();
+			String body = clientRequest.substring(5);
 			
-			switch(action) {
-				case "upload":
-					getFile(reader, writer);
+			switch(method) {
+				case "POST ":
+					writer.println("201 CREATED: " + body );
 					break;
-				case "download":
-					sendFile(reader, writer);
+				case "GET  ":
+					String fileContents = getFileContents(body);
+					writer.println("200 OK: " + fileContents);
 					break;
 				default:
-					System.out.println("Unknown action: " + action);
+					writer.println("501 NOT IMPLEMENTED: " + method);
 			}
 
 			socket.close();
-			serverSocket.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public void getFile(BufferedReader reader, PrintWriter writer) {
-		try {
-			String file = reader.readLine(); // Receive file from client
-			writer.println("File received: " + file); // Send response back to client
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public void sendFile(BufferedReader reader, PrintWriter writer) {
-		try {
-			String fileName = reader.readLine(); // Receive fileName
-			String fileContents = getFileContents(fileName);
-			writer.println("File sent: " + fileContents); // Send response back to client
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -82,7 +62,6 @@ public class FTthread extends Thread {
 			}
 			
 			fileReader.close();
-			System.out.println(fileContents);
 		} catch (FileNotFoundException e) {
 			System.out.println("Could not find file: " + fileName);
 			e.printStackTrace();

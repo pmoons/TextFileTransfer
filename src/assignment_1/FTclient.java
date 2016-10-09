@@ -38,7 +38,8 @@ public class FTclient {
 			fileList = Arrays.copyOfRange(args, 1, numArgs);
 			ACTIONS.get(action).run();
 		} else {
-			// Fire up the GUI!
+			System.out.println("No arguments provided. Pass --help for available commands.");
+			System.exit(0);
 		}
 	}
 
@@ -48,20 +49,19 @@ public class FTclient {
 			System.exit(1);
 		}
 		
+		String UPLOAD_METHOD = "POST ";
+		
 		for (String fileName : fileList) {
 			String fileContents = getFileContents(fileName);
 			System.out.println("Uploading: " + fileName);
 			
 			try {
-				FTserver server = new FTserver();
-				server.start("upload");
-	
 				Socket socket = new Socket("localhost", PORT);
 				BufferedReader socketReader = new BufferedReader(
 						new InputStreamReader(socket.getInputStream()));
 				
 				PrintWriter socketWriter = new PrintWriter(socket.getOutputStream(), true);
-				socketWriter.println(fileContents); // Send file to server
+				socketWriter.println(UPLOAD_METHOD + fileContents); // Send protocol and file to server
 
 				String response = socketReader.readLine(); // Receive response
 				System.out.println("(From Server) " + response);
@@ -79,28 +79,27 @@ public class FTclient {
 			System.exit(1);
 		}
 		
-		FTserver server = new FTserver();
+		String DOWNLOAD_METHOD = "GET  ";
 		
 		for (String fileName : fileList) {
 			System.out.println("Downloading: " + fileName);
-			server.start("download");
-
+			
 			try {
 				Socket socket = new Socket("localhost", PORT);
 				BufferedReader socketReader = new BufferedReader(
 						new InputStreamReader(socket.getInputStream()));
 				
 				PrintWriter socketWriter = new PrintWriter(socket.getOutputStream(), true);
-				socketWriter.println(fileName); // Send file to server
+				socketWriter.println(DOWNLOAD_METHOD + fileName); // Send protocol and file to server
 
 				String response = socketReader.readLine(); // Receive response
 				System.out.println("(From Server) " + response);
 				
 				socket.close();
 			} catch (IOException e) {
-				System.out.println(e);
+				e.printStackTrace();
 			}
-		}
+		} 
 	}
 	
 	private static String getDirectoryName() {
