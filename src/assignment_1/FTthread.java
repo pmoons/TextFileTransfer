@@ -1,6 +1,6 @@
 /*	Name: Peter Mooney
 	Course: 563
-	Assignment: #!
+	Assignment: #1
 */
 
 package assignment_1;
